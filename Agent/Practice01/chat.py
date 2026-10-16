@@ -24,7 +24,8 @@ def load_config():
 
 
 def ask(settings, messages):
-    payload = {"model": settings["model"].strip(), "messages": messages, "stream": False}
+    stream = settings.getboolean("stream", fallback=True)
+    payload = {"model": settings["model"].strip(), "messages": messages, "stream": stream}
     request = Request(
         settings["base_url"].strip().rstrip("/") + "/chat/completions",
         data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
@@ -35,10 +36,41 @@ def ask(settings, messages):
         method="POST",
     )
     with urlopen(request, timeout=60) as response:
-        answer = json.load(response)["choices"][0]["message"]["content"]
+        if stream:
+            parts = []
+            completed = False
+            for raw_line in response:
+                line = raw_line.decode("utf-8").strip()
+                if not line.startswith("data:"):
+                    continue
+                data = line[5:].strip()
+                if data == "[DONE]":
+                    completed = True
+                    break
+                if not data:
+                    continue
+                chunk = json.loads(data)
+                if "error" in chunk:
+                    raise ValueError("服务返回流式错误，请检查模型配置或账户状态。")
+                choices = chunk.get("choices", [])
+                if not choices:
+                    continue
+                choice = choices[0]
+                if choice.get("finish_reason") is not None:
+                    completed = True
+                text = choice.get("delta", {}).get("content") or ""
+                if text:
+                    print(text, end="", flush=True)
+                    parts.append(text)
+            if not completed:
+                raise ValueError("流式响应意外中断，本轮回答未保存，请重试。")
+            answer = "".join(parts)
+            print()
+        else:
+            answer = json.load(response)["choices"][0]["message"]["content"]
+            print(answer)
         if not isinstance(answer, str) or not answer.strip():
             raise ValueError("模型没有返回文本回答。")
-        print(answer)
         return answer
 
 
