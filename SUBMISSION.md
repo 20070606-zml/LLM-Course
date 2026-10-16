@@ -16,7 +16,7 @@
 | 8. 仅添加无限循环，Ctrl+C 退出 | `week4 step3` 对 chat.py 只添加循环并缩进原有问答代码；后续验证退出处理 | 已完成 |
 | 9. 每轮发送此前全部聊天记录 | `week4 step4` 和 `test_history_in_both_modes` | 已完成 |
 | 10. 根目录 .gitignore 添加 config.ini | 忽略规则已生效；实际配置从未进入提交历史 | 已完成 |
-| 11. 上传 GitHub | 指定目标 `20070606-zml/LLM-Course`，不覆盖其他仓库 | 等待本机 GitHub 登录／授权后上传 |
+| 11. 上传 GitHub | 新建公开仓库 `20070606-zml/LLM-Course`，保留全部分阶段提交，不覆盖其他仓库 | 已完成，使用 Git 命令推送，未使用 VSCode 界面 |
 
 ## 如何查看 AI 开发过程
 
@@ -47,6 +47,9 @@ Ctrl+C 测试通过模拟 `KeyboardInterrupt` 验证退出路径。
 
 ## 发布记录
 
-目标：`https://github.com/20070606-zml/LLM-Course`。
+公开地址：[20070606-zml/LLM-Course](https://github.com/20070606-zml/LLM-Course)。
 
-当前状态：本地成果已整理，等待 GitHub 登录／授权后创建并推送；此地址目前仅为目标地址，不代表已发布。
+发布时间：2026-10-16（Asia/Shanghai）。已创建公开仓库并将全部阶段提交推送到 `main`，没有覆盖已有仓库，也没有改写开发历史。
+
+通过不带凭据的 GitHub 公开接口核对了仓库可见性、默认分支、文件列表、提交数量及远端与本地提交的一致性。
+公开文件中没有实际 `config.ini`；模型密钥和 GitHub 登录凭据均未进入仓库。

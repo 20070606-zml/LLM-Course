@@ -12,7 +12,7 @@
 已经初始化本地 Git 仓库，分支为 `main`。课程要求的各阶段代码保存在 Git 提交历史中。
 提交的作者标记为自动化工具 `Codex <codex@localhost>`，没有修改电脑全局 Git 身份配置。
 
-目标公开仓库为 `20070606-zml/LLM-Course`。上传状态以 [提交说明](SUBMISSION.md) 的发布记录为准。
+公开仓库：[20070606-zml/LLM-Course](https://github.com/20070606-zml/LLM-Course)，已推送到 `main` 分支。详情见 [提交说明](SUBMISSION.md) 的发布记录。
 本地提交使用自动化工具身份，避免暴露个人邮箱；没有改写已有的分阶段开发历史。
 
 `.gitignore` 中的 `config.ini` 规则会忽略所有子目录下的同名配置文件。仅提交不含密钥的 `config.example.ini`。
