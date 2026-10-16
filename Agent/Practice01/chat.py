@@ -3,8 +3,9 @@
 import configparser
 import json
 import sys
+from http.client import HTTPException
 from pathlib import Path
-from urllib.error import HTTPError, URLError
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 
@@ -20,6 +21,7 @@ def load_config():
         value = settings.get(name, "").strip()
         if not value or "YOUR_" in value or "your-provider.example" in value:
             raise ValueError(f"请在 config.ini 中填写有效的 {name}。")
+    settings.getboolean("stream", fallback=True)
     return settings
 
 
@@ -68,21 +70,37 @@ def ask(settings, messages):
             print()
         else:
             answer = json.load(response)["choices"][0]["message"]["content"]
-            print(answer)
         if not isinstance(answer, str) or not answer.strip():
             raise ValueError("模型没有返回文本回答。")
+        if not stream:
+            print(answer)
         return answer
 
 
 def main():
     settings = load_config()
     messages = []
+    mode = "流式" if settings.getboolean("stream", fallback=True) else "非流式"
+    print(f"LLM 对话（{mode}，保留本次运行的聊天记录，Ctrl+C 退出）")
     while True:
         question = input("你：").strip()
         if question:
             print("AI：", end="", flush=True)
             turn = [{"role": "user", "content": question}]
-            answer = ask(settings, messages + turn)
+            try:
+                answer = ask(settings, messages + turn)
+            except HTTPError as exc:
+                print(f"\n请求失败（HTTP {exc.code}），请检查密钥、模型名称和账户状态。", file=sys.stderr)
+                continue
+            except (OSError, HTTPException):
+                print("\n网络请求失败，请检查服务地址、网络连接或代理，然后重试。", file=sys.stderr)
+                continue
+            except ValueError as exc:
+                print(f"\n回答处理失败：{exc}", file=sys.stderr)
+                continue
+            except (KeyError, IndexError, TypeError, AttributeError):
+                print("\n模型返回格式不正确，请确认服务支持 Chat Completions 接口。", file=sys.stderr)
+                continue
             messages.extend(turn + [{"role": "assistant", "content": answer}])
 
 
@@ -91,9 +109,9 @@ if __name__ == "__main__":
         main()
     except (KeyboardInterrupt, EOFError):
         print("\n已退出。")
-    except HTTPError as exc:
-        print(f"\n请求失败（HTTP {exc.code}），请检查模型配置和账户状态。", file=sys.stderr)
+    except ValueError as exc:
+        print(f"\n配置错误：{exc}", file=sys.stderr)
         sys.exit(1)
-    except (OSError, URLError, ValueError, KeyError, IndexError, TypeError, configparser.Error):
-        print("\n运行失败，请检查 config.ini、网络连接和服务返回格式。", file=sys.stderr)
+    except (OSError, configparser.Error):
+        print("\n无法读取配置，请检查 config.ini 的内容、编码和文件权限。", file=sys.stderr)
         sys.exit(1)
