@@ -76,10 +76,11 @@ def ask(settings, messages):
 
 def main():
     settings = load_config()
-    question = input("你：").strip()
-    if question:
-        print("AI：", end="", flush=True)
-        ask(settings, [{"role": "user", "content": question}])
+    while True:
+        question = input("你：").strip()
+        if question:
+            print("AI：", end="", flush=True)
+            ask(settings, [{"role": "user", "content": question}])
 
 
 if __name__ == "__main__":
