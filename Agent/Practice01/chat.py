@@ -76,11 +76,14 @@ def ask(settings, messages):
 
 def main():
     settings = load_config()
+    messages = []
     while True:
         question = input("你：").strip()
         if question:
             print("AI：", end="", flush=True)
-            ask(settings, [{"role": "user", "content": question}])
+            turn = [{"role": "user", "content": question}]
+            answer = ask(settings, messages + turn)
+            messages.extend(turn + [{"role": "assistant", "content": answer}])
 
 
 if __name__ == "__main__":
