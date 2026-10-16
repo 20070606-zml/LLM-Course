@@ -16,9 +16,18 @@
 
 ```powershell
 git config user.name "你的名字"
-git config user.email "你的 GitHub 提交邮箱"
+git config user.email "GitHub 提供的 noreply 邮箱"
 git remote add origin https://github.com/你的用户名/你的仓库名.git
 git push -u origin main
 ```
 
 `.gitignore` 中的 `config.ini` 规则会忽略所有子目录下的同名配置文件。仅提交不含密钥的 `config.example.ini`。
+
+## 公开仓库与本地配置
+
+公开仓库保存程序、使用说明、分阶段提示词、测试和占位配置模板。
+`api_key` 是代码字段名，可以公开；真实密钥只能写入本机被忽略的 `config.ini`。
+密码、GitHub 令牌、真实密钥、个人配置、私人邮箱和本机用户名不应写入公开文件、截图或提交说明。
+`.env`、本地配置文件及常见私钥文件也已加入忽略规则。
+
+配置缺失时可以使用模拟接口完成客户端测试，真实模型测试必须使用自己的本地配置；验收记录会区分这两种情况。

@@ -1,4 +1,11 @@
 config.ini
+config.local.ini
+.env
+.env.*
+!.env.example
+.secrets/
+*.pem
+*.key
 __pycache__/
 *.py[cod]
 .venv/

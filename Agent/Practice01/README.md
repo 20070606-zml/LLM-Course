@@ -5,7 +5,7 @@
 
 ## 1. 填写配置
 
-本机已经生成 `config.ini`；新克隆仓库时先将 `config.example.ini` 复制为 `config.ini`。
+将 `config.example.ini` 复制为 `config.ini`（已经存在时无需覆盖）。
 在 `config.ini` 中填写你自己的三项配置：
 
 ```ini
@@ -19,13 +19,15 @@ stream = true
 `base_url` 不包含 `/chat/completions`，程序会自动补上这一段；保留服务商要求的 `/v1` 等路径。
 不要使用聊天网页地址。配置文件在脚本旁边，因此从其他目录启动也可以找到它。
 配置模板中的占位内容必须替换；未配置时程序会指出缺少哪一项。
+真实配置只在本机保存，`config.ini` 已被 Git 忽略，不会随正常提交上传。
+字段名 `api_key` 和模板中的 `YOUR_API_KEY` 均不包含真实密钥，可以放在公开仓库中。
 
 ## 2. 启动
 
-在 PowerShell 中执行：
+从仓库根目录在 PowerShell 中执行：
 
 ```powershell
-Set-Location D:\guthub\LLM\Agent\Practice01
+Set-Location .\Agent\Practice01
 .\run.cmd
 ```
 
