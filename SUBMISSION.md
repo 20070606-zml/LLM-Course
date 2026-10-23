@@ -53,3 +53,8 @@ Ctrl+C 测试通过模拟 `KeyboardInterrupt` 验证退出路径。
 
 通过不带凭据的 GitHub 公开接口核对了仓库可见性、默认分支、文件列表、提交数量及远端与本地提交的一致性。
 公开文件中没有实际 `config.ini`；模型密钥和 GitHub 登录凭据均未进入仓库。
+
+
+## 2026-10-23：前三次 MVP 任务补充
+
+目录已整理至 D:\LLM-Course，第四周代码保留。新增宠物医院单工具 MCP、AnythingLLM 文件信息单工具 MCP、上传嵌入网页及 Playground 配置。14 项模拟上游 HTTP 集成测试通过，宠物医院另用真实 exe 验证。AnythingLLM 未配置密钥、未启动，真实向量化待验收。本次新增内容仅在本地，尚未推送。详见根目录 README.md 与 Playground/TEST_REPORT.md。

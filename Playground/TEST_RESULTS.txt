@@ -1,0 +1,19 @@
+test_bad_api_key_is_not_leaked (Playground.test_course.CourseTests.test_bad_api_key_is_not_leaked) ... ok
+test_embedding_failure_reports_partial_success (Playground.test_course.CourseTests.test_embedding_failure_reports_partial_success) ... ok
+test_filter_sort_pagination_mapping (Playground.test_course.CourseTests.test_filter_sort_pagination_mapping) ... ok
+test_first_workspace_uses_api_order (Playground.test_course.CourseTests.test_first_workspace_uses_api_order) ... ok
+test_invalid_pagination_and_cost_range (Playground.test_course.CourseTests.test_invalid_pagination_and_cost_range) ... ok
+test_modern_and_legacy_clients (Playground.test_course.CourseTests.test_modern_and_legacy_clients) ... ok
+test_modern_direct_post_no_handshake_or_session (Playground.test_course.CourseTests.test_modern_direct_post_no_handshake_or_session) ... ok
+test_no_workspace (Playground.test_course.CourseTests.test_no_workspace) ... ok
+test_older_protocol_versions (Playground.test_course.CourseTests.test_older_protocol_versions) ... ok
+test_page_and_workspace_api (Playground.test_course.CourseTests.test_page_and_workspace_api) ... ok
+test_reject_empty_file_and_foreign_origin (Playground.test_course.CourseTests.test_reject_empty_file_and_foreign_origin) ... ok
+test_silent_embedding_failure_is_detected (Playground.test_course.CourseTests.test_silent_embedding_failure_is_detected) ... ok
+test_upload_failure_does_not_embed (Playground.test_course.CourseTests.test_upload_failure_does_not_embed) ... ok
+test_upload_then_embed (Playground.test_course.CourseTests.test_upload_then_embed) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 4.777s
+
+OK

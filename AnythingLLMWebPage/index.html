@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>工作区文档上传</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f6f8;color:#182b3a;font:16px/1.7 system-ui,sans-serif}
+main{max-width:660px;margin:8vh auto;padding:32px}header p{color:#546775}h1{font-size:30px;margin:8px 0}
+.tag{color:#087f75;font-size:13px;letter-spacing:2px;font-weight:700}.panel{background:white;border:1px solid #dae3e9;border-radius:16px;padding:26px;margin-top:24px}
+label{display:block;font-weight:600;margin-bottom:12px}input{display:block;width:100%;padding:16px;border:1px dashed #98adb9;border-radius:8px}
+button{background:#087f75;color:white;border:0;border-radius:8px;padding:12px 20px;font:inherit;cursor:pointer;margin-top:20px}
+button:disabled{opacity:.55;cursor:wait}.hint{font-size:14px;color:#5c6f7d}#result{white-space:pre-wrap;overflow-wrap:anywhere}#result.error{color:#a42b25}#result.success{color:#066b42}
+</style>
+<main>
+<header><span class="tag">ANYTHINGLLM · 课程实践</span><h1>把文档加入你的工作区</h1><p>选择文件，上传后自动完成工作区嵌入。</p></header>
+<section class="panel"><span class="hint">目标：接口返回的第一个工作区</span><p id="workspace" aria-live="polite">正在读取工作区…</p>
+<form id="form"><label for="file">选择文档</label><input id="file" name="file" type="file" required>
+<p class="hint">单个文件最大 20 MB。建议先用 TXT 文档测试。支持格式取决于 AnythingLLM 的文档解析器。</p>
+<button id="submit" type="submit">上传并嵌入</button></form><p id="result" role="status" aria-live="polite"></p></section>
+<p class="hint">文件只会发送至本地配置的 AnythingLLM。API Key 由后端读取。</p>
+</main>
+<script>
+const statusText=document.querySelector('#result'), button=document.querySelector('#submit');
+async function workspace(){
+  try{const res=await fetch('/workspace');const data=await res.json();if(!res.ok)throw Error(data.error);
+    document.querySelector('#workspace').textContent=`${data.workspace} · ${data.count} 个文件`;
+  }catch(err){document.querySelector('#workspace').textContent=err.message;}
+}
+document.querySelector('#form').addEventListener('submit',async event=>{
+  event.preventDefault();const file=document.querySelector('#file').files[0];
+  if(!file || file.size===0 || file.size>20*1024*1024){statusText.className='error';statusText.textContent='请选择非空且不超过 20 MB 的文件。';return;}
+  button.disabled=true;statusText.className='';statusText.textContent='正在上传并嵌入，请稍候…';
+  try{const body=new FormData();body.append('file',file);const res=await fetch('/upload',{method:'POST',body});
+    const data=await res.json();if(!res.ok)throw Error(data.error || '上传失败');
+    statusText.className='success';statusText.textContent=`${data.message}\n工作区：${data.workspace}\n${data.files.join('\n')}`;await workspace();
+  }catch(err){statusText.className='error';statusText.textContent=err.message;}
+  finally{button.disabled=false;}
+});workspace();
+</script>
+</html>

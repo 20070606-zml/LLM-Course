@@ -6,7 +6,13 @@ config.local.ini
 .secrets/
 *.pem
 *.key
+.venv/
 __pycache__/
 *.py[cod]
-.venv/
+*.log
+*.exe
+*.db
+*.db-*
+PetHospitalServer/data/
+Playground/.test-*/
 .test-chat-*/
