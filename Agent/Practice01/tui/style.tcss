@@ -1,0 +1,14 @@
+Screen { background: #0e1420; color: #e6edf7; }
+Header { background: #18253a; color: #9de5d3; }
+#body { height: 1fr; }
+#sidebar { width: 27; background: #142033; border-right: solid #2d5164; padding: 1 2; }
+.brand { color: #7ce3ca; text-style: bold; height: 3; }
+.muted { color: #90a6b7; height: 3; }
+.info { color: #d5e5ed; background: #1b3041; padding: 1; margin: 1 0; height: auto; }
+#main { width: 1fr; padding: 1 2; }
+#section { height: 2; color: #9de5d3; text-style: bold; }
+#conversation { height: 1fr; background: #111c2b; border: solid #2d5164; padding: 1; }
+#status { height: 2; color: #9cb4c2; padding: 0 1; }
+#prompt { height: 3; border: solid #398f87; background: #182a39; color: #fff; }
+#prompt:focus { border: solid #72d7bd; }
+Footer { background: #18253a; }
