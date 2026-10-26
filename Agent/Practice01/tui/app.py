@@ -25,10 +25,10 @@ class Xingya(App):
         with Horizontal(id="body"):
             with Vertical(id="sidebar"):
                 yield Static("✦  星 芽", classes="brand")
-                yield Static("本地模型 · 12 个工具", classes="muted")
+                yield Static("本地模型 · 14 个工具", classes="muted")
                 yield Static(f"模型\n{self.agent.config['model']}", classes="info")
                 yield Static(f"文件范围\n{ROOT}", classes="info")
-                yield Static("能力\n日期 · 闰年\n文件 · 目录", classes="info")
+                yield Static("能力\n日期 · 闰年\n文件 · 目录\n网页 · 搜索", classes="info")
             with Vertical(id="main"):
                 yield Static("对话", id="section")
                 yield RichLog(id="conversation", markup=False, wrap=True, highlight=False)
@@ -37,7 +37,7 @@ class Xingya(App):
         yield Footer()
 
     def on_mount(self) -> None:
-        self.query_one("#conversation", RichLog).write("星芽：你好！我可以查日期、判断闰年，也可以整理 Playground 中的文件。")
+        self.query_one("#conversation", RichLog).write("星芽：你好！我可以查日期、整理 Playground 文件、读取网页和搜索信息。")
         self.query_one("#prompt", Input).focus()
 
     def on_input_submitted(self, event: Input.Submitted) -> None:

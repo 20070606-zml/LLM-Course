@@ -8,7 +8,7 @@
 本地模型配置仍读同目录被 Git 忽略的 `config.ini`，当前使用 `http://127.0.0.1:11434/v1`、`qwen3:4b`。
 新电脑安装依赖：在课程根目录执行 `.\.venv\Scripts\python.exe -m pip install -r Agent\Practice01\requirements-agent.txt`。
 
-12 个函数：
+14 个函数：
 
 1. `get_local_date`：通过 `subprocess` 执行 Windows `date /t`。
 2. `is_current_year_leap`：Python 内部算法判断当前年份。
@@ -22,6 +22,17 @@
 10. `rename_item`：重命名文件或目录。
 11. `delete_directory`：删除非空目录。
 12. `delete_file`：删除文件。
+13. `fetchpage`：用本地 `curl.exe` 下载网页，并用 `trafilatura` 提取 Markdown 正文及原始 URL。
+14. `searchWeb`：用百度千帆搜索 API 返回最多 5 条标题、摘要和来源 URL。
+
+搜索功能需要在本地、被 Git 忽略的 `config.ini` 中新增：
+
+```ini
+[search]
+baidu_qianfan_api_key = 你自己的密钥
+```
+
+没有密钥时会返回明确的配置错误；`fetchpage` 不需要搜索密钥。网页正文最多返回 12000 字符，以控制上下文长度。依赖安装命令见上文。百度搜索接口可能消耗免费额度或产生费用，请在百度控制台确认额度。
 
 文件工具仅可操作 `D:\LLM-Course\Playground` 及其子目录；路径越界会拒绝。文本限制 100 KB，列表最多显示 100 项。请先在 Playground 建立练习目录，再让 Agent 操作。
 模型自行选择工具；可能选错。删除命令会立即执行，仅在练习目录使用。

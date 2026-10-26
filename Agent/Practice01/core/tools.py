@@ -3,6 +3,10 @@ import json
 import mimetypes
 import shutil
 import subprocess
+import configparser
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlparse
+from urllib.request import Request, urlopen
 from datetime import datetime
 from pathlib import Path
 
@@ -131,10 +135,67 @@ def delete_file(path: str) -> str:
     return "文件已删除"
 
 
+def fetchpage(url: str) -> dict:
+    """用本机 curl 下载网页，用 trafilatura 提取 Markdown 正文。"""
+    from trafilatura import extract
+
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https") or not parsed.netloc:
+        raise ValueError("仅支持 HTTP 或 HTTPS 网页 URL")
+    result = subprocess.run(
+        ["curl.exe", "--location", "--fail", "--silent", "--show-error",
+         "--max-time", "20", "--max-filesize", "1048576",
+         "--proto", "=http,https", "--proto-redir", "=http,https", url],
+        capture_output=True, timeout=25,
+    )
+    if result.returncode:
+        raise ValueError("网页获取失败：" + result.stderr.decode("utf-8", errors="replace")[:300])
+    if not result.stdout:
+        raise ValueError("网页内容为空")
+    markdown = extract(result.stdout.decode("utf-8", errors="replace"),
+                       output_format="markdown", include_links=True,
+                       include_tables=True, favor_precision=True)
+    if not markdown:
+        raise ValueError("未提取到网页正文")
+    return {"url": url, "markdown": markdown[:12000]}
+
+
+def searchWeb(query: str) -> list[dict]:
+    """搜索网页并返回最多 5 条摘要、标题和 URL。"""
+    if not query.strip():
+        raise ValueError("搜索内容不能为空")
+    config = configparser.ConfigParser(interpolation=None)
+    config.read(Path(__file__).resolve().parents[1] / "config.ini", encoding="utf-8-sig")
+    key = config.get("search", "baidu_qianfan_api_key", fallback="").strip()
+    if not key or key.startswith("YOUR_"):
+        raise ValueError("尚未配置百度千帆搜索 API Key；请在本地 config.ini 的 [search] 中填写 baidu_qianfan_api_key")
+    body = {"messages": [{"role": "user", "content": query}],
+            "search_source": "baidu_search_v2", "edition": "standard",
+            "resource_type_filter": [{"type": "web", "top_k": 5}]}
+    request = Request(
+        "https://qianfan.baidubce.com/v2/ai_search/web_search",
+        data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
+        headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urlopen(request, timeout=20) as response:
+            data = json.load(response)
+    except HTTPError as exc:
+        raise ValueError(f"百度搜索 HTTP {exc.code}；请检查 API Key、额度和请求参数") from None
+    except (URLError, TimeoutError) as exc:
+        raise ValueError("百度搜索网络请求失败或超时：" + str(exc.reason if isinstance(exc, URLError) else exc)) from None
+    if data.get("code"):
+        raise ValueError("百度搜索 API 错误：" + str(data.get("code")) + " " + str(data.get("message", ""))[:200])
+    return [{"title": str(item.get("title") or ""), "url": str(item.get("url") or ""),
+             "snippet": str(item.get("snippet") or item.get("content") or "")[:500]}
+            for item in data.get("references", [])[:5] if isinstance(item, dict)]
+
+
 FUNCTIONS = {func.__name__: func for func in (
     get_local_date, is_current_year_leap, get_current_directory, list_directory,
     get_file_type, read_text_file, modify_text_file, create_text_file,
-    create_directory, rename_item, delete_directory, delete_file)}
+    create_directory, rename_item, delete_directory, delete_file, fetchpage, searchWeb)}
 
 PROPERTIES = {
     "list_directory": {"directory": "目录，相对 Playground，默认 ."},
@@ -146,6 +207,8 @@ PROPERTIES = {
     "rename_item": {"path": "原路径", "new_name": "新文件名，不含目录"},
     "delete_directory": {"directory": "要删除的目录，包括其内容"},
     "delete_file": {"path": "要删除的文件"},
+    "fetchpage": {"url": "要读取的 HTTP/HTTPS 网页 URL"},
+    "searchWeb": {"query": "搜索关键词或问题"},
 }
 
 DESCRIPTIONS = {
@@ -161,6 +224,8 @@ DESCRIPTIONS = {
     "rename_item": "重命名文件或目录",
     "delete_directory": "删除目录及其全部内容",
     "delete_file": "删除文件",
+    "fetchpage": "提取指定网页的正文，保留标题、段落、列表、表格和链接，返回 Markdown 与原始 URL",
+    "searchWeb": "通过百度千帆搜索最新网页，返回标题、摘要和来源 URL",
 }
 
 
