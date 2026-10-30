@@ -7,6 +7,16 @@ from urllib.request import Request, urlopen
 from .tools import call, specs
 
 
+def load_skills() -> str:
+    """每轮对话重新读取项目中的 SKILL.md。"""
+    root = Path(__file__).resolve().parents[1] / ".agents" / "skills"
+    found = []
+    for path in sorted(root.glob("*/SKILL.md")):
+        if path.is_file() and path.stat().st_size <= 8000:
+            found.append(path.read_text(encoding="utf-8-sig"))
+    return "\n\n".join(found[:10])
+
+
 def settings() -> dict:
     config = configparser.ConfigParser(interpolation=None)
     path = Path(__file__).resolve().parents[1] / "config.ini"
@@ -66,13 +76,15 @@ class Agent:
         return "".join(parts), [calls[index] for index in sorted(calls)]
 
     def ask(self, question: str, emit) -> str:
-        messages = self.history + [{"role": "user", "content": question}]
+        skill_text = load_skills()
+        system = [{"role": "system", "content": "按需遵循以下本地 Skills：\n" + skill_text}] if skill_text else []
+        messages = system + self.history + [{"role": "user", "content": question}]
         for _ in range(6):
             answer, tool_calls = self._completion(messages, emit)
             if not tool_calls:
                 if not answer.strip():
                     raise ValueError("模型没有返回文本")
-                self.history = messages + [{"role": "assistant", "content": answer}]
+                self.history = messages[len(system):] + [{"role": "assistant", "content": answer}]
                 return answer
             messages.append({"role": "assistant", "content": answer or None, "tool_calls": tool_calls})
             for tool in tool_calls:

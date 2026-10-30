@@ -2,6 +2,8 @@
 
 这是第四周单文件聊天程序的后续原型。`chat.py` 保留原作业；新功能在 `core` 和 `tui` 中。
 
+Skill：在 `Agent/Practice01/.agents/skills/<名称>/SKILL.md` 放入说明文件。星芽每次对话时重新读取，修改后无需重启。仓库自带“撰写通知”示例，对应课堂照片中的标题、落款和信息确认规则。
+
 启动：双击 `run-agent.cmd`。脚本先启动 D 盘 Ollama，再打开 Textual 界面。
 输入问题后按 Enter。`Ctrl+L` 清空当前对话，`Ctrl+Q` 退出。
 
