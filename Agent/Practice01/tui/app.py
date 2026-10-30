@@ -25,7 +25,7 @@ class Xingya(App):
         with Horizontal(id="body"):
             with Vertical(id="sidebar"):
                 yield Static("✦  星 芽", classes="brand")
-                yield Static("本地模型 · 14 个工具", classes="muted")
+                yield Static("本地模型 · 15 个工具", classes="muted")
                 yield Static(f"模型\n{self.agent.config['model']}", classes="info")
                 yield Static(f"文件范围\n{ROOT}", classes="info")
                 yield Static("能力\n日期 · 闰年\n文件 · 目录\n网页 · 搜索", classes="info")

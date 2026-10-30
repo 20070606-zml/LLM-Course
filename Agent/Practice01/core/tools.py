@@ -192,10 +192,27 @@ def searchWeb(query: str) -> list[dict]:
             for item in data.get("references", [])[:5] if isinstance(item, dict)]
 
 
+def RunCli(command: str, args: list[str]) -> dict:
+    """运行本机已安装的命令，返回退出码和有限长度的输出。"""
+    if not command or not isinstance(args, list) or not all(isinstance(x, str) for x in args):
+        raise ValueError("command 必须是程序名，args 必须是字符串列表")
+    try:
+        result = subprocess.run([command, *args], shell=False, capture_output=True,
+                                text=True, errors="replace", timeout=30)
+        out, err = result.stdout, result.stderr
+        return {"stdout": out[:4000], "stderr": err[:4000],
+                "exit_code": result.returncode,
+                "stdout_truncated": len(out) > 4000,
+                "stderr_truncated": len(err) > 4000}
+    except subprocess.TimeoutExpired:
+        return {"stdout": "", "stderr": "命令执行超过 30 秒", "exit_code": None,
+                "stdout_truncated": False, "stderr_truncated": False}
+
+
 FUNCTIONS = {func.__name__: func for func in (
     get_local_date, is_current_year_leap, get_current_directory, list_directory,
     get_file_type, read_text_file, modify_text_file, create_text_file,
-    create_directory, rename_item, delete_directory, delete_file, fetchpage, searchWeb)}
+    create_directory, rename_item, delete_directory, delete_file, fetchpage, searchWeb, RunCli)}
 
 PROPERTIES = {
     "list_directory": {"directory": "目录，相对 Playground，默认 ."},
@@ -209,6 +226,7 @@ PROPERTIES = {
     "delete_file": {"path": "要删除的文件"},
     "fetchpage": {"url": "要读取的 HTTP/HTTPS 网页 URL"},
     "searchWeb": {"query": "搜索关键词或问题"},
+    "RunCli": {"command": "已安装的程序名", "args": "参数字符串列表"},
 }
 
 DESCRIPTIONS = {
@@ -226,6 +244,7 @@ DESCRIPTIONS = {
     "delete_file": "删除文件",
     "fetchpage": "提取指定网页的正文，保留标题、段落、列表、表格和链接，返回 Markdown 与原始 URL",
     "searchWeb": "通过百度千帆搜索最新网页，返回标题、摘要和来源 URL",
+    "RunCli": "运行本地 CLI，返回 stdout、stderr、退出码及输出截断状态",
 }
 
 
@@ -237,7 +256,9 @@ def specs() -> list[dict]:
         result.append({"type": "function", "function": {"name": name,
             "description": DESCRIPTIONS[name],
             "parameters": {"type": "object", "properties": {
-                field: {"type": "string", "description": desc} for field, desc in fields.items()},
+                field: {"type": "array", "items": {"type": "string"}, "description": desc}
+                if name == "RunCli" and field == "args" else {"type": "string", "description": desc}
+                for field, desc in fields.items()},
                 "required": [field for field in fields if field not in optional.get(name, set())],
                 "additionalProperties": False}}})
     return result

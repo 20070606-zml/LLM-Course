@@ -8,7 +8,7 @@
 本地模型配置仍读同目录被 Git 忽略的 `config.ini`，当前使用 `http://127.0.0.1:11434/v1`、`qwen3:4b`。
 新电脑安装依赖：在课程根目录执行 `.\.venv\Scripts\python.exe -m pip install -r Agent\Practice01\requirements-agent.txt`。
 
-14 个函数：
+15 个函数：
 
 1. `get_local_date`：通过 `subprocess` 执行 Windows `date /t`。
 2. `is_current_year_leap`：Python 内部算法判断当前年份。
@@ -24,6 +24,7 @@
 12. `delete_file`：删除文件。
 13. `fetchpage`：用本地 `curl.exe` 下载网页，并用 `trafilatura` 提取 Markdown 正文及原始 URL。
 14. `searchWeb`：用百度千帆搜索 API 返回最多 5 条标题、摘要和来源 URL。
+15. `RunCli`：执行本机命令，返回 stdout、stderr、退出码和截断标记。
 
 搜索功能需要在本地、被 Git 忽略的 `config.ini` 中新增：
 
